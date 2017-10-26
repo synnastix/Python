@@ -30,7 +30,7 @@ def main():
 
 		#If the password is found
 		if guess:
-			print '[+] Found it ' + password + '\n'
+			print '[+] The password is: ' + password + '\n'
 			exit(0)
 
 	#If password not found in dictionary
