@@ -28,10 +28,13 @@ def main():
 		password = line.strip('\n')
 		guess = extractFile(zFile, password)
 
-		#if the password is found
+		#If the password is found
 		if guess:
 			print '[+] Found it ' + password + '\n'
 			exit(0)
 
+	#If password not found in dictionary
+	print '[-] Password not in specified dictionary'
+			
 if __name__ == '__main__':
 	main()
