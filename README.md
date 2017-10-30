@@ -1,8 +1,10 @@
 # Practice
 Repo to store practice projects.
 
-pwcrack.py - from Violent Python
+pwcrack.py - Practice from Violent Python
 
-zipcrack.py - from Violent Python
+zipcrack.py - Practice from Violent Python
 
-fball.py - Got bored during NFL games.
+fball.py - Got bored during NFL games due to horrible gameplay and needed a distraction.
+
+listcompare.py - Compare two lists and identify overlapping items.
