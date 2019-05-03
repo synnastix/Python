@@ -9,4 +9,4 @@ fball.py - Got bored during NFL games due to horrible gameplay and needed a dist
 
 listcompare.py - Compare two lists and identify overlapping items.
 
-excel_csv.py - Take a mix of Excel and CSV files and merge them into a single file selecting only specified columns from each file.
+excel_csv.py - Take a mix of Excel and CSV files and merge them into a single file selecting only specified columns from each file.  Requires pandas and pyexcel.
