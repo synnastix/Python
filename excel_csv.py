@@ -6,9 +6,9 @@ import pyexcel
 import os
 
 #Define file paths for the source material and outputs
-path = '/home/user/Desktop/practice/'
-parsed = '/home/user/Desktop/practice/parsed/'
-completed = '/home/user/Desktop/practice/completed/'
+path = 'source_material_path'
+parsed = 'formatted_parsed_data_path'
+completed = 'final_output_path'
 
 #Remove any old files so as to not contaminate the new data
 old_completed = glob.glob(completed + '*')
