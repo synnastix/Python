@@ -57,6 +57,3 @@ csv_merge()
 
 #success
 print 'All Finished!'
-
-
-
