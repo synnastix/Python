@@ -43,6 +43,7 @@ def excel_convert():
         df2.to_csv(out) 
     print "Done grabbing needed data"
 
+#Merge into single CSV file
 def csv_merge():
     #grab all the parsed CSV files
     csv_files = glob.glob(parsed + '*.csv')
