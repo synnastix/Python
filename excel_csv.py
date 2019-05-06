@@ -26,7 +26,7 @@ print "Done deleting old data"
 def csv_convert():
     raw_csv = glob.glob(path + '*.csv')
     for raw in raw_csv:
-        print 'Found' + raw + ', converting to Excel'
+        print 'Found ' + os.path.basename(raw) + ', converting to Excel'
         sheet = pyexcel.get_sheet(file_name=raw)
         sheet.save_as(raw + '.xlsx')
     print "Done converting CSV files to Excel"
@@ -35,7 +35,7 @@ def csv_convert():
 def excel_convert():    
     excel_files = glob.glob(path + '*xlsx') 
     for excel in excel_files:
-        print 'Found' + excel + ', converting to csv'
+        print 'Found ' + os.path.basename(excel) + ', converting to csv'
         out = parsed + os.path.basename(excel.split('.')[0]+'.csv')
         df = pd.read_excel(excel) # if only the first sheet is needed.
         #Specify which columns to select by column header
