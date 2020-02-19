@@ -2,13 +2,16 @@ import extract_msg
 import glob
 import os
 import re
+import pandas as pd
+import hashlib
+import itertools
 
 # Define some variables
-path = 'path'
+path = 'path' # Input path to messages
+output = 'output.xlsx' # Input path to output file
 retpath = r'Return-Path: (.*)'
 rec = r'Received: (.*)'
 recip = r'(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})'
-btc = r'\b[13][a-km-zA-HJ-NP-Z1-9]{25,34}\b'
 email = r'\b[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b'
 email_domain = r'[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})'
 url = r'[a-zA-Z]+://[-a-zA-Z0-9.]+(?:/[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?(?:\?[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?'
@@ -32,12 +35,15 @@ for filename in f:
     msg_subj = msg.subject
     msg_head = msg.header
     msg_message = msg.body
+
+    # Create unique message ID
+    head = str(msg_head)
+    head_bytes = head.encode()
+    mess_hash = hashlib.sha256(head_bytes)
+    mess_id = mess_hash.hexdigest()
     
     # Clean up white space in body
     msg_body = " ".join(msg_message.split())
-
-    # Hunt header data
-    head = str(msg_head)
 
     # Finds the return path
     retm = re.findall(retpath, head)
@@ -63,16 +69,10 @@ for filename in f:
     bodydom = re.findall(domain, body)
     bodydomd = dedup(bodydom)
 
-    # Hunt BTC Addresses WIP
-    bodybtc = re.findall(btc, body)
-    
     # Create list of data points
-    data = [msg_date, msg_sender, msg_to, msg_cc, msg_subj, body, retm, rec_ips, bodyemaild, bodyurld, bodydomd]
+    df_cols = ['Message_ID', 'Date', 'Sender', 'Return-Path', 'Receipt_IPs', 'To', 'CC', 'Subject', 'Body', 'Body_Emails', 'Body_URLs', 'Body_Domains']
+    data = [mess_id, msg_date, msg_sender, retm, rec_ips, msg_to, msg_cc, msg_subj, body, bodyemaild, bodyurld, bodydomd]
+    df = pd.DataFrame(data, df_cols).T
 
     # Output
-    print body
-
-# To do:
-# Hunt BTC addresses in body
-# Convert data points to data frame???
-# Create unique msg id
+    df.to_excel(output)
