@@ -10,8 +10,8 @@ from pandas import ExcelWriter
 from openpyxl import load_workbook
 
 # Define some variables
-path = '/home/maxx/Desktop/msg/' # Input path to messages
-output = 'output.xlsx' # Input path to output file
+path = '/home/snaxx/Desktop/msg/' # Input path to messages
+output = '/home/snaxx/Desktop/msg/test.xlsx' # Input path to output file
 retpath = r'Return-Path: (.*)'
 rec = r'Received: (.*)'
 recip = r'(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})'
@@ -19,8 +19,7 @@ email = r'\b[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b'
 email_domain = r'[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})'
 url = r'[a-zA-Z]+://[-a-zA-Z0-9.]+(?:/[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?(?:\?[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?'
 domain = r'[a-zA-Z]+://([-a-zA-Z0-9.]+)(?:/[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?(?:\?[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?'
-df_cols = ['Message_ID', 'Date', 'Sender', 'Return-Path', 'Receipt_IPs', 'To', 'CC', 'Subject', 'Body', 'Body_Emails', 'Body_URLs', 'Body_Domains']
-
+df_cols = ['Message_ID', 'Date', 'Sender', 'Sender_Email', 'Return-Path', 'Receipt_IPs', 'To', 'CC', 'Subject', 'Body', 'Body_Emails', 'Body_URLs', 'Body_Domains']
 
 # List dedup function
 def dedup(x):
@@ -64,6 +63,9 @@ for filename in f:
     recipm = re.findall(recip, recstr)
     rec_ips = dedup(recipm)
 
+    # Extract sender email
+    sender_email = re.findall(email, msg_sender)
+
     # String message body for search
     body = str(msg_body)
 
@@ -80,7 +82,7 @@ for filename in f:
     bodydomd = dedup(bodydom)
 
     # Create list of data points
-    data = [mess_id, msg_date, msg_sender, retm, rec_ips, msg_to, msg_cc, msg_subj, body, bodyemaild, bodyurld, bodydomd]
+    data = [mess_id, msg_date, msg_sender, sender_email, retm, rec_ips, msg_to, msg_cc, msg_subj, body, bodyemaild, bodyurld, bodydomd]
     df = pd.DataFrame(data).T
 
     # Output to Excel
