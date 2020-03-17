@@ -10,8 +10,8 @@ from pandas import ExcelWriter
 from openpyxl import load_workbook
 
 # Define some variables
-path = '/home/snaxx/Desktop/msg/' # Input path to messages
-output = '/home/snaxx/Desktop/msg/test.xlsx' # Input path to output file
+path = 'path' # Input path to messages
+output = 'path/test.xlsx' # Input path to output file
 retpath = r'Return-Path: (.*)'
 rec = r'Received: (.*)'
 recip = r'(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})\.(?:[\d]{1,3})'
@@ -20,6 +20,7 @@ email_domain = r'[a-zA-Z0-9._%+-]+@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,6})'
 url = r'[a-zA-Z]+://[-a-zA-Z0-9.]+(?:/[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?(?:\?[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?'
 domain = r'[a-zA-Z]+://([-a-zA-Z0-9.]+)(?:/[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?(?:\?[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?'
 df_cols = ['Message_ID', 'Date', 'Sender', 'Sender_Email', 'Return-Path', 'Receipt_IPs', 'To', 'CC', 'Subject', 'Body', 'Body_Emails', 'Body_URLs', 'Body_Domains']
+e = 0
 
 # List dedup function
 def dedup(x):
@@ -35,62 +36,67 @@ writer.save()
 f = glob.glob(path + '*.msg')
 for filename in f:  
 
-    # Extract desired fields
-    msg = extract_msg.Message(filename)
-    msg_sender = msg.sender
-    msg_to = msg.to
-    msg_cc = msg.cc
-    msg_date = msg.date
-    msg_subj = msg.subject
-    msg_head = msg.header
-    msg_message = msg.body
+    try:
+        # Extract desired fields
+        msg = extract_msg.Message(filename)
+        msg_sender = msg.sender
+        msg_to = msg.to
+        msg_cc = msg.cc
+        msg_date = msg.date
+        msg_subj = msg.subject
+        msg_head = msg.header
+        msg_message = msg.body
 
-    # Create unique message ID
-    head = str(msg_head)
-    head_bytes = head.encode()
-    mess_hash = hashlib.sha256(head_bytes)
-    mess_id = mess_hash.hexdigest()
+        # Create unique message ID
+        head = str(msg_head)
+        head_bytes = head.encode()
+        mess_hash = hashlib.sha256(head_bytes)
+        mess_id = mess_hash.hexdigest()
     
-    # Clean up white space in body
-    msg_body = " ".join(msg_message.split())
+        # Clean up white space in body
+        msg_body = " ".join(msg_message.split())
+    
+        # Finds the return path
+        retm = re.findall(retpath, head)
+    
+        # Finds reciept info and hunt IP addresses
+        recm = re.findall(rec, head)
+        recstr = str(recm)
+        recipm = re.findall(recip, recstr)
+        rec_ips = dedup(recipm)
+    
+        # Extract sender email
+        sender_email = re.findall(email, msg_sender)
+    
+        # String message body for search
+        body = str(msg_body)
+    
+        # Hunt email addresses and dedup
+        bodyemail = re.findall(email, body)
+        bodyemaild = dedup(bodyemail)
+        bodyedom = re.findall(email_domain, body)
+        bodyedomd = dedup(bodyedom)
+    
+        # Hunt links and domains
+        bodyurl = re.findall(url, body)
+        bodyurld = dedup(bodyurl)
+        bodydom = re.findall(domain, body)
+        bodydomd = dedup(bodydom)
+    
+        # Create list of data points
+        data = [mess_id, msg_date, msg_sender, sender_email, retm, rec_ips, msg_to, msg_cc, msg_subj, body, bodyemaild, bodyurld, bodydomd]
+        df = pd.DataFrame(data).T
 
-    # Finds the return path
-    retm = re.findall(retpath, head)
+        # Output to Excel
+        book = load_workbook(output)
+        writer = pd.ExcelWriter(output, engine='openpyxl')
+        writer.book = book
+        writer.sheets = {ws.title: ws for ws in book.worksheets}
+        for sheetname in writer.sheets:
+            df.to_excel(writer,sheet_name=sheetname, startrow=writer.sheets[sheetname].max_row, index = False,header= False)
 
-    # Finds reciept info and hunt IP addresses
-    recm = re.findall(rec, head)
-    recstr = str(recm)
-    recipm = re.findall(recip, recstr)
-    rec_ips = dedup(recipm)
-
-    # Extract sender email
-    sender_email = re.findall(email, msg_sender)
-
-    # String message body for search
-    body = str(msg_body)
-
-    # Hunt email addresses and dedup
-    bodyemail = re.findall(email, body)
-    bodyemaild = dedup(bodyemail)
-    bodyedom = re.findall(email_domain, body)
-    bodyedomd = dedup(bodyedom)
-
-    # Hunt links and domains
-    bodyurl = re.findall(url, body)
-    bodyurld = dedup(bodyurl)
-    bodydom = re.findall(domain, body)
-    bodydomd = dedup(bodydom)
-
-    # Create list of data points
-    data = [mess_id, msg_date, msg_sender, sender_email, retm, rec_ips, msg_to, msg_cc, msg_subj, body, bodyemaild, bodyurld, bodydomd]
-    df = pd.DataFrame(data).T
-
-    # Output to Excel
-    book = load_workbook(output)
-    writer = pd.ExcelWriter(output, engine='openpyxl')
-    writer.book = book
-    writer.sheets = {ws.title: ws for ws in book.worksheets}
-    for sheetname in writer.sheets:
-        df.to_excel(writer,sheet_name=sheetname, startrow=writer.sheets[sheetname].max_row, index = False,header= False)
-
-    writer.save()
+        writer.save()
+    except:
+        e = e + 1
+        
+print(f'Errors occurred while processing {e} files')
