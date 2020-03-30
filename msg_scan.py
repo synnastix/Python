@@ -21,6 +21,7 @@ url = r'[a-zA-Z]+://[-a-zA-Z0-9.]+(?:/[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?(?:\?[-a-zA-
 domain = r'[a-zA-Z]+://([-a-zA-Z0-9.]+)(?:/[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?(?:\?[-a-zA-Z0-9+&@#/%=~_|!:,.;]*)?'
 df_cols = ['Message_ID', 'Date', 'Sender', 'Sender_Email', 'Return-Path', 'Receipt_IPs', 'To', 'CC', 'Subject', 'Body', 'Body_Emails', 'Body_URLs', 'Body_Domains']
 e = 0
+t = 0
 
 # List dedup function
 def dedup(x):
@@ -35,7 +36,7 @@ writer.save()
 # Loop through messages
 f = glob.glob(path + '*.msg')
 for filename in f:  
-
+    t = t + 1
     try:
         # Extract desired fields
         msg = extract_msg.Message(filename)
@@ -99,4 +100,4 @@ for filename in f:
     except:
         e = e + 1
         
-print(f'Errors occurred while processing {e} files')
+print(f'Errors occurred while processing {e} of {t} files')
