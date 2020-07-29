@@ -1,4 +1,4 @@
-# Multi purpose data manipulation assuming an input csv with 'year', 'thing', 'value' columns
+# Multi-purpose data manipulation assuming an input csv with 'year', 'thing', 'value' columns
 
 import pandas as pd
 
