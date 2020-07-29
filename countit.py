@@ -17,7 +17,7 @@ df = df.apply(lambda x: x.str.strip() if x.dtype == "object" else x)
 # Groupby value
 df1 = df.groupby(['year', 'thing']).sum()
 
-# Groupby pivot table
+# Create pivot table
 df2 = df.groupby(['year','thing'],as_index = False).sum().pivot('year','thing').fillna(0)
 
 # Cumulative sum
