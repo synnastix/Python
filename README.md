@@ -14,3 +14,5 @@ excel_csv.py - Take a mix of Excel and CSV files and merge them into a single fi
 msg_scan.py - Scrape interesting data points out of suspicious email messages from Outlook's .msg format.  Requires extract_msg.
 
 countit.py - Simple utility for manipulating data.
+
+text_analysis.py - Script to scan a word doc and extract keywords and keyword groupings.  Based on this script here - https://github.com/AprilStaples/All-the-scripts/blob/master/text-mining-docx.py
