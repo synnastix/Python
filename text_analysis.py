@@ -32,7 +32,7 @@ tokenized_word = word_tokenize(lower_text)
 tokenized_word = [word for word in tokenized_word if word.isalpha()]
 
 # Remove stop words
-stop_words = set(stopwords.words("english"))
+stop_words = set(stopwords.words("english")) # Change language to process other languages
 cleaned = [word for word in tokenized_word if word not in stop_words]
 
 # Initialize workbook
