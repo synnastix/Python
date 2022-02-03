@@ -1,10 +1,14 @@
 import pandas as pd
 import openpyxl
+import time
+
+# Start the clock
+start = time.time()
 
 # Specify inputs / outputs
 
 data = 'data.xlsx' # This is your source data
-wordlist = 'wordlist.txt' # This is your list of terms for searching
+wordlist = 'keywords.txt' # This is your list of terms for searching
 true_out = 'true_rows.csv' # Rows where a match was found will end up here
 false_out = 'false_rows.csv' # Rows where a match was not found will end up here
 colx = 'text' # Specify column to search within based on your column headers in your data
@@ -38,5 +42,17 @@ isjunk.to_csv(true_out)
 notjunk = df[~df.test]
 notjunk.to_csv(false_out)
 
-# Let me know something happened
-print('All clean.')
+# Count rows because metrics
+total = len(df)
+true_rows = len(isjunk)
+false_rows = len(notjunk)
+
+# Calculate elapsed time
+end = time.time()
+elapsed = end - start
+
+# Let me know what happened
+print('There were originally ' + str(total) + ' rows of data')
+print(str(true_rows) + ' rows matched the keyword list')
+print(str(false_rows) + ' rows did not match the keyword list')
+print('All done and it only took ' + str(elapsed) + ' seconds')
