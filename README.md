@@ -19,4 +19,4 @@ countit.py - Simple utility for manipulating data.
 
 text_analysis.py - Script to scan a word doc and extract keywords and keyword groupings.  Based on this script here - https://github.com/AprilStaples/All-the-scripts/blob/master/text-mining-docx.py
 
-cleaner.py - Script for comparing data in a csv against a list of search terms, then sorting the results into TRUE / FALSE piles
+cleaner.py - Script for comparing data in a csv against a list of search terms, then sorting the results into TRUE / FALSE piles.  Decided to do some additional hunting within the text.
