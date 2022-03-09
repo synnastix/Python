@@ -1,11 +1,12 @@
 import pandas as pd
 import openpyxl
 import time
+import re
 
 # Start the clock
 start = time.time()
 
-# Specify inputs / outputs
+# Specify variables
 
 data = 'data.xlsx' # This is your source data
 wordlist = 'keywords.txt' # This is your list of terms for searching
@@ -13,6 +14,9 @@ true_out = 'true_rows.csv' # Rows where a match was found will end up here
 false_out = 'false_rows.csv' # Rows where a match was not found will end up here
 colx = 'text' # Specify column to search within based on your column headers in your data
 colz = 'key' # Specify column to load based on your column header in your wordlist if using CSV
+creds = r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+[*:]+.+'
+email = r'\b[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}\b'
+domain = r'(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}'
 
 # Read in data as dataframe and normalize data to check in lower case
 # df = pd.read_csv(data)
@@ -33,6 +37,11 @@ for i in range(len(list)):
 
 # Check and append true / false test
 df['test'] = df[colx].apply(lambda x: any([k in x for k in list]))
+
+# Hunt for stuff
+df['email'] = df[colx].str.findall(email)
+df['domains'] = df[colx].str.findall(domain)
+df['credentials'] = df[colx].str.findall(creds)
 
 # Split data based on true / false test and output to file
 
